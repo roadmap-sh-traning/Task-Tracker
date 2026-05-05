@@ -3,17 +3,13 @@
 import type { Command } from "./types/command.js";
 import { handleCli } from "./handlers/handle-cli.js";
 
-const greeting: string = "Hello, TypeScript!";
-console.log(greeting);
+const [command, ...rest] = process.argv.slice(2) as [Command, ...string[]];
 
-// Access arguments passed to the CLI
-// process.argv[0] is the node path
-// process.argv[1] is the script path
-const args = process.argv.slice(2);
+console.log(`Hello! You passed:${command} ${rest}`);
 
-const command = args[0] as Command;
-const infoText = args[1];
-
-handleCli(command, infoText);
-
-console.log(`Hello! You passed: ${command} and ${infoText}`);
+try {
+  handleCli(command, rest);
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}

@@ -10,18 +10,18 @@ export class FileManager {
     }
   }
 
-  read<T>(): T[] {
+  read<T>() {
     try {
       const data = fs.readFileSync(JSON_URL, "utf8");
 
       if (!data || data.trim() === "") {
-        return [];
+        return [] as T[];
       }
 
       return JSON.parse(data) as T[];
     } catch (err) {
       console.error(err);
-      return [];
+      return [] as T[];
     }
   }
 }
