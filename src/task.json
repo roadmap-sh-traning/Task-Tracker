@@ -1,53 +1,17 @@
 [
-  null,
-  {
-    "id": 2,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-05-05T14:59:09.328Z",
-    "updatedAt": "2026-05-05T14:59:09.329Z"
-  },
-  {
-    "id": 3,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-05-05T14:59:10.098Z",
-    "updatedAt": "2026-05-05T14:59:10.098Z"
-  },
-  {
-    "id": 4,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-05-05T14:59:52.262Z",
-    "updatedAt": "2026-05-05T14:59:52.262Z"
-  },
-  {
-    "id": 5,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-05-05T14:59:53.109Z",
-    "updatedAt": "2026-05-05T14:59:53.109Z"
-  },
-  {
-    "id": 6,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-05-05T15:20:26.134Z",
-    "updatedAt": "2026-05-05T15:20:26.134Z"
-  },
   {
     "id": 7,
     "description": "Buy groceries",
-    "status": "todo",
+    "status": "in-progress",
     "createdAt": "2026-05-05T15:20:27.100Z",
-    "updatedAt": "2026-05-05T15:20:27.100Z"
+    "updatedAt": "2026-05-05T18:25:04.994Z"
   },
   {
     "id": 8,
     "description": "Buy groceries",
-    "status": "todo",
+    "status": "done",
     "createdAt": "2026-05-05T15:20:27.976Z",
-    "updatedAt": "2026-05-05T15:20:27.976Z"
+    "updatedAt": "2026-05-05T18:24:49.943Z"
   },
   {
     "id": 9,

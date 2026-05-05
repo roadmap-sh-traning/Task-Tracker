@@ -1,5 +1,6 @@
 import { BSP_ERROR_COLLECTION } from "./constants/errors.js";
 import { FileManager } from "./file-manager.js";
+import type { TaskProgress } from "./types/task-progress.js";
 import type { Task } from "./types/task.js";
 
 export class CliManager {
@@ -25,13 +26,15 @@ export class CliManager {
     this.fileManager.add<Task[]>(tasks);
   }
 
-  updateTask(id: number, infoText: string) {
+  updateTask(id: number, infoText: string, status?: TaskProgress) {
     const tasks = this.fileManager.read<Task>();
 
-    try {
-      const { taskIndex, task } = this.validateTask(tasks, id);
+    console.warn(`validateTask validateTaskvalidateTask}`, tasks);
 
-      if (typeof task === "string") return;
+    try {
+      const { taskIndex } = this.validateTask(tasks, id);
+
+      console.log(`Updating task updateTask updateTask: ${infoText} ${id}`);
 
       const existing = tasks[taskIndex];
       if (!existing)
@@ -39,7 +42,8 @@ export class CliManager {
 
       tasks[taskIndex] = {
         ...existing,
-        description: infoText,
+        ...(status ? { status } : {}),
+        description: status ? existing.description : infoText,
         updatedAt: new Date().toISOString(),
       };
 
@@ -59,15 +63,13 @@ export class CliManager {
     console.log(`Deleting task with id: ${taskId}`);
 
     try {
-      const { taskIndex, task } = this.validateTask(tasks, taskId);
-
-      if (typeof task === "string") return;
+      const { taskIndex } = this.validateTask(tasks, taskId);
 
       delete tasks[taskIndex];
 
-      console.log(`Task with id ${taskId} deleted successfully`, tasks);
+      const removeNulls = tasks.filter(Boolean);
 
-      this.fileManager.add<Task[]>(tasks);
+      this.fileManager.add<Task[]>(removeNulls);
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
@@ -75,6 +77,16 @@ export class CliManager {
         console.error(String(err));
       }
     }
+  }
+
+  listTasks(status: TaskProgress | null) {
+    const tasks = this.fileManager.read<Task>();
+
+    if (!tasks || tasks.length === 0) {
+      throw new Error(BSP_ERROR_COLLECTION.TASKS_NOT_FOUND);
+    }
+
+    return status ? tasks.filter((t) => t.status === status) : tasks;
   }
 
   private validateTask(
