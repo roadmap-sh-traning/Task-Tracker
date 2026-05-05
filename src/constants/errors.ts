@@ -10,4 +10,6 @@ export const BSP_HANDLE_CLI_ERRORS = {
   INVALID_COMMAND: "Invalid command",
   INFO_TEXT_REQUIRED: "Info text is required",
   ID_REQUIRED: "ID is required",
+  INVALID_ID: "Invalid ID",
+  INVALID_TASK_PROGRESS: "Invalid task progress",
 };

@@ -1,20 +1,17 @@
 import { BSP_ERROR_COLLECTION } from "./constants/errors.js";
 import { FileManager } from "./file-manager.js";
+import { TaskRepository } from "./task-repository.js";
 import type { TaskProgress } from "./types/task-progress.js";
 import type { Task } from "./types/task.js";
 
 export class CliManager {
-  fileManager = new FileManager();
+  taskRepository = new TaskRepository(new FileManager());
 
   addTask(infoText: string) {
-    const tasks = this.fileManager.read<Task>();
-
-    if (!tasks) {
-      return BSP_ERROR_COLLECTION.TASKS_NOT_FOUND;
-    }
+    const tasks = this.taskRepository.getAllTasks();
 
     const newTask: Task = {
-      id: tasks.length + 1,
+      id: Math.max(...tasks.map((t) => t.id)) + 1 || 1,
       description: infoText,
       status: "todo",
       createdAt: new Date().toISOString(),
@@ -23,64 +20,39 @@ export class CliManager {
 
     tasks.push(newTask);
 
-    this.fileManager.add<Task[]>(tasks);
+    this.taskRepository.saveAllTasks(tasks);
   }
 
   updateTask(id: number, infoText: string, status?: TaskProgress) {
-    const tasks = this.fileManager.read<Task>();
+    const tasks = this.taskRepository.getAllTasks();
 
-    console.warn(`validateTask validateTaskvalidateTask}`, tasks);
+    const { taskIndex } = this.validateTask(tasks, id);
 
-    try {
-      const { taskIndex } = this.validateTask(tasks, id);
+    const existing = tasks[taskIndex];
+    if (!existing) throw new Error(BSP_ERROR_COLLECTION.TASK_DONT_FOUND_THAT_INDEX);
 
-      console.log(`Updating task updateTask updateTask: ${infoText} ${id}`);
+    tasks[taskIndex] = {
+      ...existing,
+      ...(status ? { status } : {}),
+      description: status ? existing.description : infoText,
+      updatedAt: new Date().toISOString(),
+    };
 
-      const existing = tasks[taskIndex];
-      if (!existing)
-        throw new Error(BSP_ERROR_COLLECTION.TASK_DONT_FOUND_THAT_INDEX);
-
-      tasks[taskIndex] = {
-        ...existing,
-        ...(status ? { status } : {}),
-        description: status ? existing.description : infoText,
-        updatedAt: new Date().toISOString(),
-      };
-
-      this.fileManager.add<Task[]>(tasks);
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      } else {
-        console.error(String(err));
-      }
-    }
+    this.taskRepository.saveAllTasks(tasks);
   }
 
   deleteTask(taskId: number) {
-    const tasks = this.fileManager.read<Task>();
+    const tasks = this.taskRepository.getAllTasks();
 
-    console.log(`Deleting task with id: ${taskId}`);
+    const { taskIndex } = this.validateTask(tasks, taskId);
 
-    try {
-      const { taskIndex } = this.validateTask(tasks, taskId);
+    tasks.splice(taskIndex, 1);
 
-      delete tasks[taskIndex];
-
-      const removeNulls = tasks.filter(Boolean);
-
-      this.fileManager.add<Task[]>(removeNulls);
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      } else {
-        console.error(String(err));
-      }
-    }
+    this.taskRepository.saveAllTasks(tasks);
   }
 
   listTasks(status: TaskProgress | null) {
-    const tasks = this.fileManager.read<Task>();
+    const tasks = this.taskRepository.getAllTasks();
 
     if (!tasks || tasks.length === 0) {
       throw new Error(BSP_ERROR_COLLECTION.TASKS_NOT_FOUND);
@@ -89,14 +61,7 @@ export class CliManager {
     return status ? tasks.filter((t) => t.status === status) : tasks;
   }
 
-  private validateTask(
-    tasks: Task[],
-    taskId: number,
-  ): { taskIndex: number; task: Task } {
-    if (!tasks) {
-      throw new Error(BSP_ERROR_COLLECTION.TASKS_NOT_FOUND);
-    }
-
+  private validateTask(tasks: Task[], taskId: number): { taskIndex: number; task: Task } {
     const index = tasks.findIndex((t) => t.id === taskId);
 
     if (index === -1) {

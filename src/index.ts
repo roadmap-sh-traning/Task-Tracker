@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
+import { CliController } from "./cli-controller.js";
+import { CliManager } from "./cli-manager.js";
 import type { Command } from "./types/command.js";
-import { handleCli } from "./handlers/handle-cli.js";
 
 const [command, ...rest] = process.argv.slice(2) as [Command, ...string[]];
 
-console.log(`Hello! You passed:${command} ${rest}`);
+const cliManager = new CliManager();
+const cliController = new CliController(cliManager);
 
 try {
-  handleCli(command, rest);
+  cliController.handleCliCommand(command, rest);
 } catch (error) {
   console.error(error);
   process.exit(1);
